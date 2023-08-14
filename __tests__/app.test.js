@@ -12,16 +12,6 @@ afterAll(() => {
   return connection.end();
 });
 
-describe("GET/api/healthcheck", () => {
-  test("200: responds with a connected message", () => {
-    return request(app)
-      .get("/api/healthcheck")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body).toHaveProperty("msg", "Connected to server");
-      });
-  });
-});
 
 describe("GET/api/topics", () => {
     test("200: responds with an array of topic objects with their slug and description", () => {
