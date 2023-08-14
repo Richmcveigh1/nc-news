@@ -3,6 +3,7 @@ const app = require("../db/app");
 const connection = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
+const endpointsJSON = require('../endpoints.json')
 
 beforeEach(() => {
   return seed(data);
@@ -35,19 +36,7 @@ describe("GET/api", () => {
       .expect(200)
       .then((res) => {
         const { endpoints } = res.body;
-        expect(endpoints).toHaveProperty("GET /api");
-        expect(endpoints).toHaveProperty("GET /api/topics");
-        expect(endpoints).toHaveProperty("GET /api/articles");
-        expect(endpoints["GET /api/topics"]).toHaveProperty(
-          "description",
-          "serves an array of all topics"
-        );
-        expect(endpoints["GET /api/articles"]).toHaveProperty("queries", [
-          "author",
-          "topic",
-          "sort_by",
-          "order",
-        ]);
+        expect(endpoints).toEqual(endpointsJSON)
       });
   });
 });
