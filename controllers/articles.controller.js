@@ -25,3 +25,10 @@ exports.getAllArticles = (req, res, next) => {
     res.status(200).send(articlesArray);
   });
 };
+
+exports.getAllCommentsForArticleFromID = (req, res, next) => {
+    const { article_id } = req.params;
+    selectAllCommentsFromArticleID(article_id).then((commentsFromID) => {
+        commentsArray = commentsFromID.rows
+    })
+}
