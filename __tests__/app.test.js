@@ -71,9 +71,31 @@ describe("GET/api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/1234567890")
       .expect(404)
-      .then(( res ) => {
-    
+      .then((res) => {
         expect(res.text).toBe("Not found");
+      });
+  });
+});
+
+describe("Get/api/articles", () => {
+  test("200: responds with an array containing all of the articles as objects including a comment count and without a body property", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        const articles = res.body;
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author", expect.any(String));
+          expect(article).toHaveProperty("title", expect.any(String));
+          expect(article).toHaveProperty("article_id", expect.any(Number));
+          expect(article).toHaveProperty("topic", expect.any(String));
+          expect(article).toHaveProperty("created_at", expect.any(String));
+          expect(article).toHaveProperty("votes", expect.any(Number));
+          expect(article).toHaveProperty("article_img_url", expect.any(String));
+          expect(article).toHaveProperty("comment_count", expect.any(String));
+        });
       });
   });
 });
