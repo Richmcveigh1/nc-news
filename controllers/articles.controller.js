@@ -20,15 +20,20 @@ exports.getArticleFromID = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  selectAllArticles().then((articles) => {
-    const articlesArray = articles.rows;
-    res.status(200).send(articlesArray);
-  });
+  selectAllArticles()
+    .then((articles) => {
+      const articlesArray = articles.rows;
+      res.status(200).send(articlesArray);
+    })
+    .catch(next);
 };
 
 exports.getAllCommentsForArticleFromID = (req, res, next) => {
-    const { article_id } = req.params;
-    selectAllCommentsFromArticleID(article_id).then((commentsFromID) => {
-        commentsArray = commentsFromID.rows
+  const { article_id } = req.params;
+  selectAllCommentsFromArticleID(article_id)
+    .then((commentsFromID) => {
+      const commentsArray = commentsFromID.rows;
+      res.status(200).send(commentsArray);
     })
-}
+    .catch(next);
+};

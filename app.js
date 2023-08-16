@@ -2,8 +2,9 @@ const express = require("express");
 const app = express();
 const { getTopics } = require("./controllers/topics.controller");
 const { getEndpoints } = require("./controllers/api.controller");
-const { getArticleFromID, getAllArticles, getAllCommentsForArticleFromID } = require("./controllers/articles.controller");
-const { handle400s, customErrorHandler } = require("./controllers/errors.controller");
+const { getArticleFromID, getAllArticles } = require("./controllers/articles.controller");
+const { getAllCommentsForArticleFromID } = require("./controllers/comments.controller")
+const { handle400s, handle404s, customErrorHandler } = require("./controllers/errors.controller");
 
 app.get("/api/topics", getTopics);
 
@@ -21,9 +22,12 @@ app.use((_, res) => {
 
 app.use(handle400s);
 
+app.use(handle404s)
+
 app.use(customErrorHandler)
 
 app.use((err, _, res, next) => {
+  console.log(err, '<< error handler in app')
   res.status(500).send({ msg: err });
 });
 

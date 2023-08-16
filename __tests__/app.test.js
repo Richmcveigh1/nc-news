@@ -100,6 +100,59 @@ describe("Get/api/articles", () => {
   });
 });
 
+describe("/api/articles/:article_id/comments", () => {
+  test("200: responds with an array of comments relating to the requested article id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((res) => {
+        const comments = res.body;
+        console.log(comments)
+        expect(comments.length).toBe(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true })
+        comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id", expect.any(Number))
+            expect(comment).toHaveProperty("votes", expect.any(Number))
+            expect(comment).toHaveProperty("created_at", expect.any(String))
+            expect(comment).toHaveProperty("author", expect.any(String))
+            expect(comment).toHaveProperty("body", expect.any(String))
+            expect(comment).toHaveProperty("article_id", expect.any(Number))
+        })
+      });
+  });
+  test("200: responds with an empty array if the id exists but there are no comments for that article", () => {
+    return request(app)
+    .get("/api/articles/2/comments")
+    .expect(200)
+    .then((res) => {
+        const comments = res.body;
+        expect(comments).toEqual([])
+    }) 
+  })
+  test("400: When the article_id doesn't exist it sends an error message", () => {
+    return request(app)
+      .get("/api/articles/WhoopsyDaisy/comments")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  test("404: When the request is a number but the article_id doesn't exist it replies with an error message", () => {
+    return request(app)
+      .get("/api/articles/111111111111111111/comments")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body
+        expect(msg).toBe("Not found");
+      });
+  });
+});
+
+
+
+
+
 describe("ALL /notapath", () => {
   test("404: responds with a custom 404 error message when the path is not found", () => {
     return request(app)

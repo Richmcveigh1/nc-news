@@ -5,7 +5,9 @@ exports.selectArticleWithID = (article_id) => {
 };
 
 exports.selectAllArticles = () => {
-  return db.query(`SELECT 
+  return db.query(
+    `
+    SELECT 
     articles.author, 
     articles.title, 
     articles.article_id, 
@@ -18,5 +20,6 @@ exports.selectAllArticles = () => {
     LEFT JOIN comments ON articles.article_id = comments.article_id
     GROUP BY articles.article_id
     ORDER BY created_at DESC
-    `);
+    `
+  );
 };
