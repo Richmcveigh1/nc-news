@@ -107,7 +107,6 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(200)
       .then((res) => {
         const comments = res.body;
-        console.log(comments)
         expect(comments.length).toBe(11);
         expect(comments).toBeSortedBy("created_at", { descending: true })
         comments.forEach((comment) => {
@@ -140,11 +139,20 @@ describe("/api/articles/:article_id/comments", () => {
   });
   test("404: When the request is a number but the article_id doesn't exist it replies with an error message", () => {
     return request(app)
-      .get("/api/articles/111111111111111111/comments")
+      .get("/api/articles/1111/comments")
       .expect(404)
-      .then(({ body }) => {
-        const { msg } = body
-        expect(msg).toBe("Not found");
+      .then(( { error }) => {
+          const { text } = error
+        expect(text).toBe("Not found");
+      });
+  });
+  test("404: When the request is a number out of the range it replies with Not found", () => {
+    return request(app)
+      .get("/api/articles/11111111111111111111/comments")
+      .expect(404)
+      .then(( { body }) => {
+
+        expect(body.msg).toBe("Not found");
       });
   });
 });
