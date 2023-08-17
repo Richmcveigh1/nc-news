@@ -321,6 +321,17 @@ describe("/api/articles/:article_id", () => {
         expect(msg).toBe("Bad Request");
       });
   });
+  test("400: responds with a bad request if passed a string as the votes", () => {
+    const testVotes = {inc_votes: "Invalid"};
+    return request(app)
+      .patch("/api/articles/1")
+      .send(testVotes)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
   test("404: responds with not found if the article ID doesn't exist", () => {
     const testVotes = { inc_votes: 1 };
     return request(app)
