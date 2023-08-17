@@ -5,7 +5,7 @@ exports.handle404s = (err, _, res, next) => {
     else next(err)
 }
 exports.handle400s = (err, _, res, next) => {
-
+    console.log(err, "<<< error in handle 400s")
   if (err.code === "22P02"|| err.code === '23502' || err.code === '23503') {
     res.status(400).send({ msg: "Bad Request" });
   } else next(err);

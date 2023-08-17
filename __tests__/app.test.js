@@ -236,9 +236,30 @@ describe("/api/articles/:article_id/comments", () => {
     });
 })
 
-// describe("/api/articles/:article_id", () => {
-//     test("200: patches the votes on the article idto change the number")
-// })
+describe("/api/articles/:article_id", () => {
+    test("200: patches the votes on the article id and successfully changes the number", () => {
+        const testVotes = { inc_votes: -101 }
+
+       return request(app)
+       .patch("/api/articles/1")
+       .send(testVotes)
+       .expect(200)
+       .then((res) => {
+        const newComment = res.body;
+        console.log(newComment, "<<in the tests 249")
+        expect(newComment).toHaveProperty("article_id", 1);
+        expect(newComment).toHaveProperty("body", "I find this existence challenging");
+        expect(newComment).toHaveProperty("article_id", 1);
+        expect(newComment).toHaveProperty("author", "butter_bridge");
+        expect(newComment).toHaveProperty("votes", -1);
+        expect(newComment).toHaveProperty("created_at", expect.any(String));
+       })
+    })
+    
+
+
+
+})
 
 describe("ALL /notapath", () => {
   test("404: responds with a custom 404 error message when the path is not found", () => {

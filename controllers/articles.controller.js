@@ -1,6 +1,7 @@
 const {
   selectArticleWithID,
   selectAllArticles,
+  changeVotesFromArticleID
 } = require("../models/articles.model");
 
 exports.getArticleFromID = (req, res, next) => {
@@ -38,12 +39,14 @@ exports.getAllCommentsForArticleFromID = (req, res, next) => {
     .catch(next);
 };
 
-// exports.patchArticleWithVotes = (req, res, next) => {
-//     const { article_id } = req.params
-//     changeVotesFromArticleID(article_id)
-//     .then((votes) => {
-//         const votesObject = votes.rows
-//         console.log(votesObject, "<< in the articles controller patching votes")
-//         res.status(200).send(votesObject)
-//     })
-// }
+exports.patchArticleWithVotes = (req, res, next) => {
+    const { article_id } = req.params
+    const { inc_votes } = req.body
+    
+    changeVotesFromArticleID(inc_votes, article_id)
+    .then((votes) => {
+        const votesObject = votes.rows[0]
+        res.status(200).send(votesObject)
+    })
+    .catch(next)
+}
