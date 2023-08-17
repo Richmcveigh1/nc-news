@@ -6,18 +6,12 @@ const {
 const { checkExists } = require("../utils");
 
 exports.getArticleFromID = async (req, res, next) => {
-  const { article_id } = req.params;
+    const { article_id } = req.params
 
   try {
+    await checkExists("articles", "article_id", article_id);
     const articleFromID = await selectArticleWithID(article_id);
     const article = articleFromID.rows[0];
-    if (!article) {
-      return Promise.reject({
-        status: 404,
-        msg: "Not found",
-      });
-    }
-
     res.status(200).send({ article });
   } catch (err) {
     next(err);
@@ -25,7 +19,7 @@ exports.getArticleFromID = async (req, res, next) => {
 };
 
 exports.getAllArticles = async (req, res, next) => {
-        
+
   try {
     const articles = await selectAllArticles();
     const articlesArray = articles.rows;
