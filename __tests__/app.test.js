@@ -220,46 +220,95 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
   test("404: responds with Not found if trying to post to an article ID that doesn't exist", () => {
-      const testComment = {
-          username: "butter_bridge",
-          body: "testing",
-        };
-        
-        return request(app)
-        .post("/api/articles/999/comments")
-        .send(testComment)
-        .expect(404)
-        .then(({ error }) => {
-            const { text } = error;
-            expect(text).toBe("Not found");
-          });
-    });
-})
+    const testComment = {
+      username: "butter_bridge",
+      body: "testing",
+    };
+
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(testComment)
+      .expect(404)
+      .then(({ error }) => {
+        const { text } = error;
+        expect(text).toBe("Not found");
+      });
+  });
+});
 
 describe("/api/articles/:article_id", () => {
-    test("200: patches the votes on the article id and successfully changes the number", () => {
-        const testVotes = { inc_votes: -101 }
-
-       return request(app)
-       .patch("/api/articles/1")
-       .send(testVotes)
-       .expect(200)
-       .then((res) => {
+  test("200: patches the votes on the article id and successfully changes the number if positive", () => {
+    const testVotes = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(testVotes)
+      .expect(200)
+      .then((res) => {
         const newComment = res.body;
-        console.log(newComment, "<<in the tests 249")
         expect(newComment).toHaveProperty("article_id", 1);
-        expect(newComment).toHaveProperty("body", "I find this existence challenging");
+        expect(newComment).toHaveProperty(
+          "body",
+          "I find this existence challenging"
+        );
+        expect(newComment).toHaveProperty("article_id", 1);
+        expect(newComment).toHaveProperty("author", "butter_bridge");
+        expect(newComment).toHaveProperty("votes", 101);
+        expect(newComment).toHaveProperty("created_at", expect.any(String));
+      });
+  });
+  test("200: patches the votes on the article id and successfully changes the number if negative", () => {
+    const testVotes = { inc_votes: -101 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(testVotes)
+      .expect(200)
+      .then((res) => {
+        const newComment = res.body;
+        expect(newComment).toHaveProperty("article_id", 1);
+        expect(newComment).toHaveProperty(
+          "body",
+          "I find this existence challenging"
+        );
         expect(newComment).toHaveProperty("article_id", 1);
         expect(newComment).toHaveProperty("author", "butter_bridge");
         expect(newComment).toHaveProperty("votes", -1);
         expect(newComment).toHaveProperty("created_at", expect.any(String));
-       })
-    })
-    
-
-
-
-})
+      });
+  });
+  test("400: responds with a bad request if passed an empty object", () => {
+    const testVotes = {};
+    return request(app)
+      .patch("/api/articles/1")
+      .send(testVotes)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  test("404: responds with not found if the article ID doesn't exist", () => {
+    const testVotes = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/9999")
+      .send(testVotes)
+      .expect(404)
+      .then(({ error }) => {
+        const { text } = error;
+        expect(text).toBe("Not found");
+      });
+  });
+  test("400: responds with Bad request if an invalid article ID is inputted", () => {
+    const testVotes = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/invalid")
+      .send(testVotes)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
 
 describe("ALL /notapath", () => {
   test("404: responds with a custom 404 error message when the path is not found", () => {

@@ -34,4 +34,3 @@ exports.postCommentWithArticleID = async (req, res, next) => {
     next(err);
   }
 };
-

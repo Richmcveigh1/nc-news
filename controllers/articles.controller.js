@@ -1,8 +1,9 @@
 const {
   selectArticleWithID,
   selectAllArticles,
-  changeVotesFromArticleID
+  changeVotesFromArticleID,
 } = require("../models/articles.model");
+const { checkExists } = require("../utils");
 
 exports.getArticleFromID = (req, res, next) => {
   const { article_id } = req.params;
@@ -39,14 +40,16 @@ exports.getAllCommentsForArticleFromID = (req, res, next) => {
     .catch(next);
 };
 
-exports.patchArticleWithVotes = (req, res, next) => {
-    const { article_id } = req.params
-    const { inc_votes } = req.body
-    
-    changeVotesFromArticleID(inc_votes, article_id)
-    .then((votes) => {
-        const votesObject = votes.rows[0]
-        res.status(200).send(votesObject)
-    })
-    .catch(next)
-}
+exports.patchArticleWithVotes = async (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+
+  try {
+    await checkExists("articles", "article_id", article_id);
+    const update = await changeVotesFromArticleID(inc_votes, article_id);
+    const updatedArticle = update.rows[0];
+    res.status(200).send(updatedArticle);
+  } catch (err) {
+    next(err);
+  }
+};
