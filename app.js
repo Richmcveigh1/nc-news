@@ -5,6 +5,7 @@ const { getEndpoints } = require("./controllers/api.controller");
 const {
   getArticleFromID,
   getAllArticles,
+  patchArticleWithVotes
 } = require("./controllers/articles.controller");
 const {
   getAllCommentsForArticleFromID,
@@ -29,6 +30,8 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getAllCommentsForArticleFromID);
 
 app.post("/api/articles/:article_id/comments", postCommentWithArticleID);
+
+app.patch("/api/articles/:article_id", patchArticleWithVotes)
 
 app.use((_, res) => {
   res.status(404).send({ msg: "Not found" });

@@ -23,3 +23,9 @@ exports.selectAllArticles = () => {
     `
   );
 };
+
+exports.changeVotesFromArticleID = () => {
+  return db.query(`
+  
+  `)
+}

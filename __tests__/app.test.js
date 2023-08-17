@@ -236,6 +236,10 @@ describe("/api/articles/:article_id/comments", () => {
     });
 })
 
+describe("/api/articles/:article_id", () => {
+    test("200: patches the votes on the article idto change the number")
+})
+
 describe("ALL /notapath", () => {
   test("404: responds with a custom 404 error message when the path is not found", () => {
     return request(app)
