@@ -2,6 +2,7 @@ const { all } = require("../app");
 const {
   selectAllCommentsFromArticleID,
   addComment,
+  removeComment
 } = require("../models/comments.model");
 const { checkExists } = require("../utils");
 
@@ -35,3 +36,16 @@ exports.postCommentWithArticleID = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.deleteComment = async (req, res, next) => {
+  const { comment_id } = req.params
+
+  try {
+    await checkExists("comments", "comment_id", comment_id)
+    await removeComment(comment_id)
+    res.status(204).send()
+  } catch (err) {
+    next(err)
+  }
+
+}

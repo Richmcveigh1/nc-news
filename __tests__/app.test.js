@@ -69,7 +69,7 @@ describe("GET/api/articles/:article_id", () => {
   });
   test("404: When the request is a number but the article_id doesn't exist it replies with an error message", () => {
     return request(app)
-      .get("/api/articles/1234567890")
+      .get("/api/articles/1234")
       .expect(404)
       .then((res) => {
         expect(res.text).toBe("Not found");
@@ -156,7 +156,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-describe("/api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   test("201: posts a comment to the article on the correct id", () => {
     const testComment = {
       username: "butter_bridge",
@@ -240,7 +240,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(msg).toBe("Not found");
       });
   });
-  test.only("400: Responds with a bad request when the user_id is invalid", () => {
+  test("400: Responds with a bad request when the user_id is invalid", () => {
     const testComment = {
       username: "Test User",
       body: 25,
@@ -271,7 +271,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-describe("/api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("200: patches the votes on the article id and successfully changes the number if positive", () => {
     const testVotes = { inc_votes: 1 };
     return request(app)
@@ -355,6 +355,39 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+    test("204: deletes the comment from the comments table", () => {
+        return request(app)
+        .delete("/api/comments/2")
+        .expect(204)
+    })
+    test("400: responds with a bad request if the comment id is not a number",() => {
+        return request(app)
+        .delete("/api/comments/invalid")
+        .expect(400)
+        .then(({ body }) => {
+            const { msg } = body;
+            expect(msg).toBe("Bad Request");
+          });
+    })
+    test("404: responds with not found if the comment id does not correspond to a comment",() => {
+        return request(app)
+        .delete("/api/comments/9999")
+        .expect(404)
+        .then(({ error }) => {
+            const { text } = error;
+            expect(text).toBe("Not found");
+          });
+    })
+
+})
+
+
+
+
+
+
 
 describe("ALL /notapath", () => {
   test("404: responds with a custom 404 error message when the path is not found", () => {

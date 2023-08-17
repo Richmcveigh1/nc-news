@@ -10,6 +10,7 @@ const {
 const {
   getAllCommentsForArticleFromID,
   postCommentWithArticleID,
+  deleteComment
 } = require("./controllers/comments.controller");
 const {
   handle400s,
@@ -33,13 +34,15 @@ app.post("/api/articles/:article_id/comments", postCommentWithArticleID);
 
 app.patch("/api/articles/:article_id", patchArticleWithVotes);
 
+app.delete("/api/comments/:comment_id", deleteComment)
+
 app.use((_, res) => {
   res.status(404).send({ msg: "Not found" });
 });
 
-app.use(handle400s);
-
 app.use(handle404s);
+
+app.use(handle400s);
 
 app.use(customErrorHandler);
 
