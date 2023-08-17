@@ -5,7 +5,7 @@ const {
 } = require("../models/comments.model");
 const { checkExists } = require("../utils");
 
-exports.getAllCommentsForArticleFromID = (req, res, next) => {
+exports.getAllCommentsForArticleFromID = async (req, res, next) => {
   const { article_id } = req.params;
 
   const promises = [selectAllCommentsFromArticleID(article_id)];
@@ -14,12 +14,13 @@ exports.getAllCommentsForArticleFromID = (req, res, next) => {
     promises.push(checkExists("articles", "article_id", article_id));
   }
 
-  Promise.all(promises)
-    .then(([allComments, commentsExist]) => {
-      const commentsArray = allComments.rows;
-      res.status(200).send(commentsArray);
-    })
-    .catch(next);
+  try {
+    const [allComments, commentsExist] = await Promise.all(promises);
+    const commentsArray = allComments.rows;
+    res.status(200).send(commentsArray);
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.postCommentWithArticleID = async (req, res, next) => {

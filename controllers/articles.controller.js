@@ -5,39 +5,46 @@ const {
 } = require("../models/articles.model");
 const { checkExists } = require("../utils");
 
-exports.getArticleFromID = (req, res, next) => {
+exports.getArticleFromID = async (req, res, next) => {
   const { article_id } = req.params;
-  selectArticleWithID(article_id)
-    .then((articleFromID) => {
-      const article = articleFromID.rows[0];
-      if (!article) {
-        return Promise.reject({
-          status: 404,
-          msg: "Not found",
-        });
-      }
-      res.status(200).send({ article });
-    })
-    .catch(next);
+
+  try {
+    const articleFromID = await selectArticleWithID(article_id);
+    const article = articleFromID.rows[0];
+    if (!article) {
+      return Promise.reject({
+        status: 404,
+        msg: "Not found",
+      });
+    }
+
+    res.status(200).send({ article });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.getAllArticles = (req, res, next) => {
-  selectAllArticles()
-    .then((articles) => {
-      const articlesArray = articles.rows;
-      res.status(200).send(articlesArray);
-    })
-    .catch(next);
+exports.getAllArticles = async (req, res, next) => {
+        
+  try {
+    const articles = await selectAllArticles();
+    const articlesArray = articles.rows;
+    res.status(200).send(articlesArray);
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.getAllCommentsForArticleFromID = (req, res, next) => {
+exports.getAllCommentsForArticleFromID = async (req, res, next) => {
   const { article_id } = req.params;
-  selectAllCommentsFromArticleID(article_id)
-    .then((commentsFromID) => {
-      const commentsArray = commentsFromID.rows;
-      res.status(200).send(commentsArray);
-    })
-    .catch(next);
+
+  try {
+    const comentsFromID = await selectAllCommentsFromArticleID(article_id);
+    const commentsArray = commentsFromID.rows;
+    res.status(200).send(commentsArray);
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.patchArticleWithVotes = async (req, res, next) => {
