@@ -177,7 +177,29 @@ describe("/api/articles/:article_id/comments", () => {
         expect(newComment).toHaveProperty("created_at", expect.any(String));
       });
   });
-  test("400: Responds with a bad request when trying to post a comment with nothing in the column when it is marked as NOT NULL", () => {
+    test("201: posts a comment but ignores any other properties given", () => {
+      const testComment = {
+        username: "butter_bridge",
+        body: "testing",
+        votes: 5,
+        article_id: 3
+      };
+  
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(201)
+        .then((res) => {
+          const newComment = res.body;
+          expect(newComment).toHaveProperty("comment_id", 19);
+          expect(newComment).toHaveProperty("body", "testing");
+          expect(newComment).toHaveProperty("article_id", 1);
+          expect(newComment).toHaveProperty("author", "butter_bridge");
+          expect(newComment).toHaveProperty("votes", 0);
+          expect(newComment).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+  test("400: Responds with a bad request when trying to post a comment with null in the column when it is marked as NOT NULL", () => {
     const testComment = {
       username: null,
       body: "testing",
@@ -191,9 +213,8 @@ describe("/api/articles/:article_id/comments", () => {
         expect(msg).toBe("Bad Request");
       });
   });
-  test("400: Responds with a bad request when trying to post a comment from a user that does not exist", () => {
+  test("400: Responds with a bad request when trying to post a comment with null in the column when it is marked as NOT NULL", () => {
     const testComment = {
-      username: "Test User",
       body: "testing",
     };
     return request(app)
@@ -205,13 +226,27 @@ describe("/api/articles/:article_id/comments", () => {
         expect(msg).toBe("Bad Request");
       });
   });
-  test("400: Responds with a bad request when trying to post a comment where the user name is not a string", () => {
+  test("404: Responds with not found when trying to post a comment from a user that does not exist", () => {
     const testComment = {
-      username: 25,
-      body: 25,
+      username: "Test User",
+      body: "testing",
     };
     return request(app)
       .post("/api/articles/1/comments")
+      .send(testComment)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not found");
+      });
+  });
+  test.only("400: Responds with a bad request when the user_id is invalid", () => {
+    const testComment = {
+      username: "Test User",
+      body: 25,
+    };
+    return request(app)
+      .post("/api/articles/invalid/comments")
       .send(testComment)
       .expect(400)
       .then(({ body }) => {
