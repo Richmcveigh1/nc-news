@@ -38,6 +38,6 @@ exports.removeComment = (comment_id) => {
     RETURNING *
     `,
     [comment_id]).then (({ rows }) => {
-        return rows[0]
+        return rows
     })
 }

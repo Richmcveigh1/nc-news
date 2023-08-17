@@ -41,8 +41,11 @@ exports.deleteComment = async (req, res, next) => {
   const { comment_id } = req.params
 
   try {
-    await checkExists("comments", "comment_id", comment_id)
-    await removeComment(comment_id)
+     const commentArray = await removeComment(comment_id)
+     if (commentArray.length === 0) {
+      const error = {status: 404, msg: "Not found"}
+      throw error
+     }
     res.status(204).send()
   } catch (err) {
     next(err)
