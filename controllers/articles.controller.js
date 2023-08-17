@@ -38,12 +38,12 @@ exports.getAllCommentsForArticleFromID = (req, res, next) => {
     .catch(next);
 };
 
-exports.patchArticleWithVotes = (req, res, next) => {
-    const { article_id } = req.params
-    changeVotesFromArticleID(article_id)
-    .then((votes) => {
-        const votesObject = votes.rows
-        console.log(votesObject, "<< in the articles controller patching votes")
-        res.status(200).send(votesObject)
-    })
-}
+// exports.patchArticleWithVotes = (req, res, next) => {
+//     const { article_id } = req.params
+//     changeVotesFromArticleID(article_id)
+//     .then((votes) => {
+//         const votesObject = votes.rows
+//         console.log(votesObject, "<< in the articles controller patching votes")
+//         res.status(200).send(votesObject)
+//     })
+// }

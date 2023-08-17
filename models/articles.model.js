@@ -24,8 +24,8 @@ exports.selectAllArticles = () => {
   );
 };
 
-exports.changeVotesFromArticleID = () => {
-  return db.query(`
+// exports.changeVotesFromArticleID = () => {
+//   return db.query(`
   
-  `)
-}
+//   `)
+// }
