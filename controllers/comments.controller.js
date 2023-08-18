@@ -16,7 +16,7 @@ exports.getAllCommentsForArticleFromID = async (req, res, next) => {
   }
 
   try {
-    const [allComments, commentsExist] = await Promise.all(promises);
+    const [allComments, _] = await Promise.all(promises);
     const commentsArray = allComments.rows;
     res.status(200).send(commentsArray);
   } catch (err) {
