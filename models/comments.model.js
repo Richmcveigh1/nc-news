@@ -30,8 +30,8 @@ exports.addComment = async (article_id, username, body) => {
     [username, body, article_id]
   );
   if (result.rows.length === 0) {
-   const error = await Promise.reject({ status: 404, msg: "Not found" })
-   return error   
+    const error = await Promise.reject({ status: 404, msg: "Not found" });
+    return error;
   }
   return result;
 };
@@ -45,5 +45,9 @@ exports.removeComment = async (comment_id) => {
         `,
     [comment_id]
   );
+  if (result.rows.length === 0) {
+    const error = await Promise.reject({ status: 404, msg: "Not found" });
+    return error;
+  }
   return result.rows;
 };
