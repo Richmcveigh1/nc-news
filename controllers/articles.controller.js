@@ -9,9 +9,12 @@ exports.getArticleFromID = async (req, res, next) => {
     const { article_id } = req.params
 
   try {
-    await checkExists("articles", "article_id", article_id);
     const articleFromID = await selectArticleWithID(article_id);
     const article = articleFromID.rows[0];
+    if (articleFromID.rowCount === 0) {
+      const error = { status: 404, msg: "Not found" };
+      throw error;
+    }
     res.status(200).send({ article });
   } catch (err) {
     next(err);
