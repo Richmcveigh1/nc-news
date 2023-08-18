@@ -1,7 +1,11 @@
 const db = require("../db/connection");
 
-exports.selectArticleWithID = (article_id) => {
-  return db.query("SELECT * FROM articles WHERE article_id = $1", [article_id]);
+exports.selectArticleWithID = async (article_id) => {
+  const results = await db.query(
+    "SELECT * FROM articles WHERE article_id = $1",
+    [article_id]
+  );
+  return results;
 };
 
 exports.selectAllArticles = async (
@@ -52,16 +56,13 @@ exports.selectAllArticles = async (
     sqlString += `GROUP BY articles.article_id
     ORDER BY ${sort_by} ${order}`;
   }
-  try {
-    const result = await db.query(sqlString, queryValues);
-    return result;
-  } catch (err) {
-    throw err;
-  }
+
+  const result = await db.query(sqlString, queryValues);
+  return result;
 };
 
-exports.changeVotesFromArticleID = (inc_votes, article_id) => {
-  return db.query(
+exports.changeVotesFromArticleID = async (inc_votes, article_id) => {
+  const result = await db.query(
     `
   UPDATE articles
   SET votes = votes + $1
@@ -70,4 +71,5 @@ exports.changeVotesFromArticleID = (inc_votes, article_id) => {
   `,
     [inc_votes, article_id]
   );
+  return result;
 };
