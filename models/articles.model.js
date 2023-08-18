@@ -1,11 +1,16 @@
 const db = require("../db/connection");
 
 exports.selectArticleWithID = async (article_id) => {
-  const results = await db.query(
+  const articleFromID = await db.query(
     "SELECT * FROM articles WHERE article_id = $1",
     [article_id]
   );
-  return results;
+
+  if (articleFromID.rowCount === 0) {
+    const brokenPromise = await Promise.reject({ status: 404, msg: "Not found" })
+     return brokenPromise
+    }
+  return articleFromID.rows[0];
 };
 
 exports.selectAllArticles = async (
@@ -71,5 +76,5 @@ exports.changeVotesFromArticleID = async (inc_votes, article_id) => {
   `,
     [inc_votes, article_id]
   );
-  return result;
+  return result.rows[0];
 };
