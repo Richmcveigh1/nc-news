@@ -47,6 +47,7 @@ describe("GET/api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then((res) => {
+        console.log(res.body.article, "<<line 50 in app.test")
         const { article } = res.body;
         expect(article.article_id).toBe(1);
         expect(article).toHaveProperty("title", expect.any(String));
@@ -56,6 +57,7 @@ describe("GET/api/articles/:article_id", () => {
         expect(article).toHaveProperty("created_at", expect.any(String));
         expect(article).toHaveProperty("votes", expect.any(Number));
         expect(article).toHaveProperty("article_img_url", expect.any(String));
+        expect(article).toHaveProperty("comment_count", expect.any(String))
       });
   });
   test("400: When the article_id doesn't exist it sends an error message", () => {
