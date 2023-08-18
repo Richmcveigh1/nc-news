@@ -18,8 +18,6 @@ Install NC-News
 npm install
 ```
 
-**optional**
-
 4. In order to run the tests install the following dev dependencies:
 ``` 
 npm install -D jest jest-sorted supertest
