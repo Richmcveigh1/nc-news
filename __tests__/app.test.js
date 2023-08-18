@@ -47,7 +47,7 @@ describe("GET/api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then((res) => {
-        console.log(res.body.article, "<<line 50 in app.test")
+
         const { article } = res.body;
         expect(article.article_id).toBe(1);
         expect(article).toHaveProperty("title", expect.any(String));
@@ -57,7 +57,7 @@ describe("GET/api/articles/:article_id", () => {
         expect(article).toHaveProperty("created_at", expect.any(String));
         expect(article).toHaveProperty("votes", expect.any(Number));
         expect(article).toHaveProperty("article_img_url", expect.any(String));
-        expect(article).toHaveProperty("comment_count", expect.any(String))
+        expect(article).toHaveProperty("comment_count", 11)
       });
   });
   test("400: When the article_id doesn't exist it sends an error message", () => {
@@ -84,8 +84,8 @@ describe("Get/api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((res) => {
-        const articles = res.body;
+      .then(({ body }) => {
+        const articles = body.allArticles;
         expect(articles.length).toBe(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
@@ -107,8 +107,8 @@ describe("GET /api/articles QUERIES", () => {
         return request(app)
         .get("/api/articles?topic=cats")
         .expect(200)
-        .then((res) =>{
-            const articles = res.body
+        .then(({ body }) =>{
+            const articles = body.allArticles
             expect(articles.length).toBe(1)
             expect(articles).toBeSortedBy("created_at", { descending: true });
             articles.forEach((article) => {
@@ -127,8 +127,8 @@ describe("GET /api/articles QUERIES", () => {
         return request(app)
         .get("/api/articles?topic=paper")
         .expect(200)
-        .then ((res) => {
-            const articles = res.body
+        .then (({ body }) => {
+            const articles = body.allArticles
             expect(articles).toEqual([])
         })
     })
@@ -136,8 +136,8 @@ describe("GET /api/articles QUERIES", () => {
         return request(app)
         .get("/api/articles?topic=mitch&sort_by=title&order=ASC")
         .expect(200)
-        .then ((res) => {
-            const articles = res.body
+        .then (({ body }) => {
+            const articles = body.allArticles
             expect(articles).toBeSortedBy("title", { ascending: true });
         })
     })
@@ -176,7 +176,7 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then((res) => {
-        const comments = res.body;
+        const { comments } = res.body;
         expect(comments.length).toBe(11);
         expect(comments).toBeSortedBy("created_at", { descending: true });
         comments.forEach((comment) => {
@@ -194,7 +194,7 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/2/comments")
       .expect(200)
       .then((res) => {
-        const comments = res.body;
+        const { comments } = res.body;
         expect(comments).toEqual([]);
       });
   });
@@ -238,13 +238,13 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(testComment)
       .expect(201)
       .then((res) => {
-        const newComment = res.body;
-        expect(newComment).toHaveProperty("comment_id", 19);
-        expect(newComment).toHaveProperty("body", "testing");
-        expect(newComment).toHaveProperty("article_id", 1);
-        expect(newComment).toHaveProperty("author", "butter_bridge");
-        expect(newComment).toHaveProperty("votes", 0);
-        expect(newComment).toHaveProperty("created_at", expect.any(String));
+        const { comment } = res.body;
+        expect(comment).toHaveProperty("comment_id", 19);
+        expect(comment).toHaveProperty("body", "testing");
+        expect(comment).toHaveProperty("article_id", 1);
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty("votes", 0);
+        expect(comment).toHaveProperty("created_at", expect.any(String));
       });
   });
   test("201: posts a comment but ignores any other properties given", () => {
@@ -260,13 +260,13 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(testComment)
       .expect(201)
       .then((res) => {
-        const newComment = res.body;
-        expect(newComment).toHaveProperty("comment_id", 19);
-        expect(newComment).toHaveProperty("body", "testing");
-        expect(newComment).toHaveProperty("article_id", 1);
-        expect(newComment).toHaveProperty("author", "butter_bridge");
-        expect(newComment).toHaveProperty("votes", 0);
-        expect(newComment).toHaveProperty("created_at", expect.any(String));
+        const { comment } = res.body;
+        expect(comment).toHaveProperty("comment_id", 19);
+        expect(comment).toHaveProperty("body", "testing");
+        expect(comment).toHaveProperty("article_id", 1);
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty("votes", 0);
+        expect(comment).toHaveProperty("created_at", expect.any(String));
       });
   });
   test("400: Responds with a bad request when trying to post a comment with null in the column when it is marked as NOT NULL", () => {
