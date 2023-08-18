@@ -2,7 +2,7 @@ const { all } = require("../app");
 const {
   selectAllCommentsFromArticleID,
   addComment,
-  removeComment
+  removeComment,
 } = require("../models/comments.model");
 const { checkExists } = require("../utils");
 
@@ -29,8 +29,12 @@ exports.postCommentWithArticleID = async (req, res, next) => {
   const { username, body } = req.body;
 
   try {
-    await checkExists("articles", "article_id", article_id);
-    const comment = await addComment(article_id, username, body);
+    const commentArray = await addComment(article_id, username, body);
+    const comment = commentArray[0];
+    if (commentArray.length === 0) {
+      const error = { status: 404, msg: "Not found" };
+      throw error;
+    }
     res.status(201).send(comment);
   } catch (err) {
     next(err);
@@ -38,17 +42,16 @@ exports.postCommentWithArticleID = async (req, res, next) => {
 };
 
 exports.deleteComment = async (req, res, next) => {
-  const { comment_id } = req.params
+  const { comment_id } = req.params;
 
   try {
-     const commentArray = await removeComment(comment_id)
-     if (commentArray.length === 0) {
-      const error = {status: 404, msg: "Not found"}
-      throw error
-     }
-    res.status(204).send()
+    const commentArray = await removeComment(comment_id);
+    if (commentArray.length === 0) {
+      const error = { status: 404, msg: "Not found" };
+      throw error;
+    }
+    res.status(204).send();
   } catch (err) {
-    next(err)
+    next(err);
   }
-
-}
+};

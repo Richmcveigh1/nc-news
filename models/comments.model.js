@@ -23,9 +23,9 @@ exports.selectAllCommentsFromArticleID = async (article_id) => {
   }
 };
 
-exports.addComment = (article_id, username, body) => {
-  return db
-    .query(
+exports.addComment = async (article_id, username, body) => {
+  try {
+    const result = await db.query(
       `
     INSERT INTO comments
     (author, body, article_id)
@@ -33,10 +33,11 @@ exports.addComment = (article_id, username, body) => {
     ($1, $2, $3)
     RETURNING *`,
       [username, body, article_id]
-    )
-    .then(({ rows }) => {
-      return rows[0];
-    });
+    );
+    return result.rows;
+  } catch (err) {
+    throw err;
+  }
 };
 
 exports.removeComment = async (comment_id) => {
