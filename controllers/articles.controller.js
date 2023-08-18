@@ -26,8 +26,8 @@ if (topic) {
 
   try {
     const results = await Promise.all(promises)
-    const articles = results[0].rows
-    res.status(200).send(articles);
+    const allArticles = results[0].rows
+    res.status(200).send({allArticles});
   } catch (err) {
     next(err);
   }

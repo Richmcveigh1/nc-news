@@ -17,8 +17,8 @@ exports.getAllCommentsForArticleFromID = async (req, res, next) => {
 
   try {
     const [allComments, _] = await Promise.all(promises);
-    const commentsArray = allComments.rows;
-    res.status(200).send(commentsArray);
+    const comments = allComments.rows;
+    res.status(200).send({ comments });
   } catch (err) {
     next(err);
   }
@@ -31,7 +31,7 @@ exports.postCommentWithArticleID = async (req, res, next) => {
   try {
     const commentArray = await addComment(article_id, username, body);
     const comment = commentArray.rows[0];
-    res.status(201).send(comment);
+    res.status(201).send({ comment });
   } catch (err) {
     next(err);
   }
