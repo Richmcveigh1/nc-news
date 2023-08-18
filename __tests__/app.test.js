@@ -157,7 +157,7 @@ describe("GET /api/articles QUERIES", () => {
             expect(text).toBe("Bad Request");
           });
     })
-    test("400: responds Bad request if the order is not asc or desc on the query", () => {
+    test("400: responds Bad request if the sort by field is not a column name", () => {
         return request(app)
         .get("/api/articles?topic=mitch&sort_by=INVALID&order=ASC")
         .expect(400)
