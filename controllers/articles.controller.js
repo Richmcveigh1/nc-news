@@ -19,11 +19,17 @@ exports.getArticleFromID = async (req, res, next) => {
 };
 
 exports.getAllArticles = async (req, res, next) => {
+const {topic, sort_by, order} = req.query
+const promises = [selectAllArticles(topic, sort_by, order)]
+
+if (topic) {
+  promises.push(checkExists("topics", "slug", topic))
+}
 
   try {
-    const articles = await selectAllArticles();
-    const articlesArray = articles.rows;
-    res.status(200).send(articlesArray);
+    const results = await Promise.all(promises)
+    const articles = results[0].rows
+    res.status(200).send(articles);
   } catch (err) {
     next(err);
   }

@@ -100,6 +100,74 @@ describe("Get/api/articles", () => {
   });
 });
 
+describe("GET /api/articles QUERIES", () => {
+    test("200: responds with all articles from the specified query topic", () => {
+        return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((res) =>{
+            const articles = res.body
+            expect(articles.length).toBe(1)
+            expect(articles).toBeSortedBy("created_at", { descending: true });
+            articles.forEach((article) => {
+                expect(article).toHaveProperty("topic", "cats");
+                expect(article).toHaveProperty("author", expect.any(String));
+                expect(article).toHaveProperty("title", expect.any(String));
+                expect(article).toHaveProperty("article_id", expect.any(Number));
+                expect(article).toHaveProperty("created_at", expect.any(String));
+                expect(article).toHaveProperty("votes", expect.any(Number));
+                expect(article).toHaveProperty("article_img_url", expect.any(String));
+                expect(article).toHaveProperty("comment_count", expect.any(String));
+              });
+        })
+    })
+    test("200: responds with an empty array if topic exists but it has no articles", () => {
+        return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then ((res) => {
+            const articles = res.body
+            expect(articles).toEqual([])
+        })
+    })
+    test("200: responds with an array of articles sorted by a specfiied field and ordered by the queried value", () => {
+        return request(app)
+        .get("/api/articles?topic=mitch&sort_by=title&order=ASC")
+        .expect(200)
+        .then ((res) => {
+            const articles = res.body
+            expect(articles).toBeSortedBy("title", { ascending: true });
+        })
+    })
+    test("404: responds with not found if the topic queried does not exist", () => {
+        return request(app)
+        .get("/api/articles?topic=invalid")
+        .expect(404)
+        .then(({ error }) => {
+            const { text } = error;
+            expect(text).toBe("Not found");
+          });
+    })
+    test("400: responds Bad request if the order is not asc or desc on the query", () => {
+        return request(app)
+        .get("/api/articles?topic=mitch&sort_by=title&order=INVALID")
+        .expect(400)
+        .then(({ error }) => {
+            const { text } = error;
+            expect(text).toBe("Bad Request");
+          });
+    })
+    test("400: responds Bad request if the order is not asc or desc on the query", () => {
+        return request(app)
+        .get("/api/articles?topic=mitch&sort_by=INVALID&order=ASC")
+        .expect(400)
+        .then(({ error }) => {
+            const { text } = error;
+            expect(text).toBe("Bad Request");
+          });
+    })
+})
+
 describe("/api/articles/:article_id/comments", () => {
   test("200: responds with an array of comments relating to the requested article id", () => {
     return request(app)
@@ -177,28 +245,28 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(newComment).toHaveProperty("created_at", expect.any(String));
       });
   });
-    test("201: posts a comment but ignores any other properties given", () => {
-      const testComment = {
-        username: "butter_bridge",
-        body: "testing",
-        votes: 5,
-        article_id: 3
-      };
-  
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send(testComment)
-        .expect(201)
-        .then((res) => {
-          const newComment = res.body;
-          expect(newComment).toHaveProperty("comment_id", 19);
-          expect(newComment).toHaveProperty("body", "testing");
-          expect(newComment).toHaveProperty("article_id", 1);
-          expect(newComment).toHaveProperty("author", "butter_bridge");
-          expect(newComment).toHaveProperty("votes", 0);
-          expect(newComment).toHaveProperty("created_at", expect.any(String));
-        });
-    });
+  test("201: posts a comment but ignores any other properties given", () => {
+    const testComment = {
+      username: "butter_bridge",
+      body: "testing",
+      votes: 5,
+      article_id: 3,
+    };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(testComment)
+      .expect(201)
+      .then((res) => {
+        const newComment = res.body;
+        expect(newComment).toHaveProperty("comment_id", 19);
+        expect(newComment).toHaveProperty("body", "testing");
+        expect(newComment).toHaveProperty("article_id", 1);
+        expect(newComment).toHaveProperty("author", "butter_bridge");
+        expect(newComment).toHaveProperty("votes", 0);
+        expect(newComment).toHaveProperty("created_at", expect.any(String));
+      });
+  });
   test("400: Responds with a bad request when trying to post a comment with null in the column when it is marked as NOT NULL", () => {
     const testComment = {
       username: null,
@@ -264,9 +332,9 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/999/comments")
       .send(testComment)
       .expect(404)
-      .then(({ error }) => {
-        const { text } = error;
-        expect(text).toBe("Not found");
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not found");
       });
   });
 });
@@ -322,7 +390,7 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
   test("400: responds with a bad request if passed a string as the votes", () => {
-    const testVotes = {inc_votes: "Invalid"};
+    const testVotes = { inc_votes: "Invalid" };
     return request(app)
       .patch("/api/articles/1")
       .send(testVotes)
@@ -357,50 +425,45 @@ describe("PATCH /api/articles/:article_id", () => {
 });
 
 describe("DELETE /api/comments/:comment_id", () => {
-    test("204: deletes the comment from the comments table", () => {
-        return request(app)
-        .delete("/api/comments/2")
-        .expect(204)
-    })
-    test("400: responds with a bad request if the comment id is not a number",() => {
-        return request(app)
-        .delete("/api/comments/invalid")
-        .expect(400)
-        .then(({ body }) => {
-            const { msg } = body;
-            expect(msg).toBe("Bad Request");
-          });
-    })
-    test("404: responds with not found if the comment id does not correspond to a comment",() => {
-        return request(app)
-        .delete("/api/comments/9999")
-        .expect(404)
-        .then(({ error }) => {
-            const { text } = error;
-            expect(text).toBe("Not found");
-          });
-    })
-
-})
+  test("204: deletes the comment from the comments table", () => {
+    return request(app).delete("/api/comments/2").expect(204);
+  });
+  test("400: responds with a bad request if the comment id is not a number", () => {
+    return request(app)
+      .delete("/api/comments/invalid")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  test("404: responds with not found if the comment id does not correspond to a comment", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ error }) => {
+        const { text } = error;
+        expect(text).toBe("Not found");
+      });
+  });
+});
 
 describe("GET /api/users", () => {
-    test("200: responds with an array of all users", () => {
-        return request(app)
-        .get("/api/users")
-        .expect(200)
-        .then((res) => {
-           const users = res.body
-           expect(users.length).toBe(4)
-           users.forEach((user) => {
-            expect(user).toHaveProperty("username", expect.any(String))
-            expect(user).toHaveProperty("name", expect.any(String))
-            expect(user).toHaveProperty("avatar_url", expect.any(String))
-           })
-        })
-    })
-})
-
-
+  test("200: responds with an array of all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        const users = res.body;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username", expect.any(String));
+          expect(user).toHaveProperty("name", expect.any(String));
+          expect(user).toHaveProperty("avatar_url", expect.any(String));
+        });
+      });
+  });
+});
 
 
 
