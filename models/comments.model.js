@@ -29,7 +29,11 @@ exports.addComment = async (article_id, username, body) => {
     RETURNING *`,
     [username, body, article_id]
   );
-  return result.rows;
+  if (result.rows.length === 0) {
+   const error = await Promise.reject({ status: 404, msg: "Not found" })
+   return error   
+  }
+  return result;
 };
 
 exports.removeComment = async (comment_id) => {

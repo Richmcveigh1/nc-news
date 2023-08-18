@@ -30,11 +30,7 @@ exports.postCommentWithArticleID = async (req, res, next) => {
 
   try {
     const commentArray = await addComment(article_id, username, body);
-    const comment = commentArray[0];
-    if (commentArray.length === 0) {
-      const error = { status: 404, msg: "Not found" };
-      throw error;
-    }
+    const comment = commentArray.rows[0];
     res.status(201).send(comment);
   } catch (err) {
     next(err);
@@ -48,7 +44,7 @@ exports.deleteComment = async (req, res, next) => {
     const commentArray = await removeComment(comment_id);
     if (commentArray.length === 0) {
       const error = { status: 404, msg: "Not found" };
-      throw error;
+      throw error; // CHANGE THIS TO THE MODEL
     }
     res.status(204).send();
   } catch (err) {
