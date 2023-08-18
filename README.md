@@ -8,8 +8,8 @@ Install NC-News
 
 1. Ensure that you have installed:
 
-* [Node.JS](https://nodejs.org/en)
-* [Postgres.js](https://www.postgresql.org/)
+* [Node.JS](https://nodejs.org/en): Version 18.16.0
+* [Postgres.js](https://www.postgresql.org/): Version 14
 
 2. Fork and clone the repo
 3. Open the repo and install the dependencies by running:
