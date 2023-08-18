@@ -1,11 +1,47 @@
-# Northcoders News API
+# NC News API
 
-Open the repo and install dev dependencies with npm install
+Northcoders (NC) News API is a project built for the purpose of emulating a server in the real world.
 
-Set up a file called .env.test containing PGDATABASE=nc_news_test
+## Installation
 
-Set up a file called .env.development containing PGDATABASE=nc_news
+Install NC-News
 
-Set up the database by running npm run setup-dbs
+1. Ensure that you have installed:
 
-Set up the connection with the seed by running npm run seed
+* [Node.JS](https://nodejs.org/en)
+* [Postgres.js](https://www.postgresql.org/)
+
+2. Fork and clone the repo
+3. Open the repo and install the dependencies by running:
+
+```
+npm install
+```
+
+**optional**
+
+4. In order to run the tests install the following dev dependencies:
+``` 
+npm install -D jest jest-sorted supertest
+```
+5. Run tests:
+```
+npm test
+```
+
+### Create two .env files in Project Root directory
+
+Create a file called .env.development containing 
+```
+PGDATABASE=nc_news
+```
+Create a file called .env.test containing 
+```
+PGDATABASE=nc_news_test
+```
+
+### Seed database
+```
+npm run setup-dbs
+npm run seed
+```
