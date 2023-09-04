@@ -38,6 +38,7 @@ exports.selectAllArticles = async (
     "title",
     "article_id",
     "topic",
+    "body",
     "created_at",
     "votes",
   ];
