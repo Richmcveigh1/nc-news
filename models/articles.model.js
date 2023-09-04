@@ -38,7 +38,6 @@ exports.selectAllArticles = async (
     "title",
     "article_id",
     "topic",
-    "body",
     "created_at",
     "votes",
   ];
@@ -61,6 +60,7 @@ exports.selectAllArticles = async (
   articles.title, 
   articles.article_id, 
   articles.topic, 
+  articles.body,
   articles.created_at, 
   articles.votes, 
   articles.article_img_url, 
